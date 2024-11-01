@@ -1,18 +1,19 @@
 path:
-  pretrain_model_dvae: './models/tortoise/dvae.pth'
-  strict_load: true
-  #resume_state: ../experiments/train_imgnet_vqvae_stage1/training_state/0.state   # <-- Set this to resume from a previous training state.
+  pretrain_model_dvae: './models/tortoise/dvae.pth'  # Path to the pre-trained DVA model
+  strict_load: true                                   # Ensure strict loading of weights
+  # resume_state: '../experiments/train_imgnet_vqvae_stage1/training_state/0.state'  # Uncomment to resume training from a specific state
+
 networks:
-  dvae:
-    type: generator
-    which_model_G: lucidrains_dvae
-    kwargs:
-      channels: 80
-      codebook_dim: 512
-      hidden_dim: 512
-      kernel_size: 3
-      num_layers: 2
-      num_resnet_blocks: 3
-      num_tokens: 8192
-      positional_dims: 1
-      use_transposed_convs: false
+  dvae:  # Diffusion Variational Autoencoder
+    type: generator                                  # Define the type of network
+    which_model_G: lucidrains_dvae                   # Specify the model type to be used
+    kwargs:                                         # Additional parameters for the network
+      channels: 80                                   # Number of input channels
+      codebook_dim: 512                              # Dimension of the codebook
+      hidden_dim: 512                                # Dimension of hidden layers
+      kernel_size: 3                                 # Size of the convolutional kernels
+      num_layers: 2                                  # Number of layers in the network
+      num_resnet_blocks: 3                           # Number of ResNet blocks in the network
+      num_tokens: 8192                               # Number of tokens in the input data
+      positional_dims: 1                             # Dimensionality for positional encoding
+      use_transposed_convs: false                    # Specify whether to use transposed convolutions
