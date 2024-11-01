@@ -1,4 +1,20 @@
+# Exclude model directories
 /models
 /training
 /voices
+
+# Exclude binary and temporary files
 /bin
+*.tmp
+*.log
+
+# Exclude environment files
+.env
+
+# Exclude test and example directories
+/tests
+/examples
+
+# Exclude any local configuration files
+*.local.yaml
+*.local.json
