@@ -1,19 +1,19 @@
 # AI Voice Cloning
 
-This [repo](https://git.ecker.tech/mrq/ai-voice-cloning)/[rentry](https://rentry.org/AI-Voice-Cloning/) aims to serve as both a foolproof guide for setting up AI voice cloning tools for legitimate, local use on Windows/Linux, as well as a stepping stone for anons that genuinely want to play around with [TorToiSe](https://github.com/neonbjb/tortoise-tts).
+This [repository](https://git.ecker.tech/mrq/ai-voice-cloning) and [guide](https://rentry.org/AI-Voice-Cloning/) aims to provide a comprehensive setup for AI voice cloning tools for legitimate, local use on both Windows and Linux systems. It also serves as a resource for individuals interested in experimenting with [TorToiSe](https://github.com/neonbjb/tortoise-tts).
 
-Similar to my own findings for Stable Diffusion image generation, this rentry may appear a little disheveled as I note my new findings with TorToiSe. Please keep this in mind if the guide seems to shift a bit or sound confusing.
+Like my previous findings with Stable Diffusion image generation, this guide may seem somewhat unstructured as I document my new experiences with TorToiSe. Please be patient if certain sections feel disjointed or confusing.
 
->\>Ugh... why bother when I can just abuse 11.AI?
+> "Ugh... why bother when I can just abuse 11.AI?"
+>
+> You're welcome to do so, but TorToiSe is proving to be a promising tool, especially with fine-tuning capabilities on the horizon.
 
-You're more than welcome to, but TorToiSe is shaping up to be a very promising tool, especially with finetuning now on the horizon.
-
-This is not endorsed by [neonbjb](https://github.com/neonbjb/). I do not expect this to run into any ethical issues, as it seems (like me), this is mostly for making funny haha vidya characters say funny lines.
+**Note:** This project is not endorsed by [neonbjb](https://github.com/neonbjb/). I do not anticipate any ethical issues arising, as the primary intention here is to create humorous video game characters saying amusing lines.
 
 ## Documentation
 
-Please consult [the wiki](https://git.ecker.tech/mrq/ai-voice-cloning/wiki) for the documentation.
+For detailed documentation, please consult [the wiki](https://git.ecker.tech/mrq/ai-voice-cloning/wiki).
 
 ## Bug Reporting
 
-If you run into any problems, please refer to the [issues you may encounter](https://git.ecker.tech/mrq/ai-voice-cloning/wiki/Issues) wiki page first.
+If you encounter any issues, please refer to the [issues you may encounter](https://git.ecker.tech/mrq/ai-voice-cloning/wiki/Issues) wiki page for potential solutions.
