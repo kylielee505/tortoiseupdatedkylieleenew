@@ -1,139 +1,139 @@
-name: '${voice}'
-model: extensibletrainer
-scale: 1
-gpu_ids: [0] # Manually edit this if the GPU you want to train on is not your primary, as this will set the env var that exposes CUDA devices
-start_step: 0
-checkpointing_enabled: true 
-fp16: ${half_p}
-bitsandbytes: ${bitsandbytes}
-gpus: ${gpus}
+name: '${voice}'  # Name of the voice being trained
+model: extensibletrainer  # Type of model to be used
+scale: 1  # Scale factor for training
+gpu_ids: [0]  # Specify GPU IDs for training, adjust as necessary
+start_step: 0  # Step to start training from
+checkpointing_enabled: true  # Enable or disable checkpointing
+fp16: ${half_p}  # Use 16-bit floating point for training
+bitsandbytes: ${bitsandbytes}  # Enable Bits and Bytes optimizations
+gpus: ${gpus}  # Number of GPUs to use
 
 datasets:
   train:
-    name: training
-    n_workers: ${workers}
-    batch_size: ${batch_size}
-    mode: paired_voice_audio
-    path: ${dataset_path}
-    fetcher_mode: ['lj']
-    phase: train
-    max_wav_length: 255995 # ~11.6 seconds
-    max_text_length: 200
-    sample_rate: 22050
-    load_conditioning: True
-    num_conditioning_candidates: 2
-    conditioning_length: 44000
-    use_bpe_tokenizer: True
-    tokenizer_vocab: ${tokenizer_json} # ./models/tortoise/bpe_lowercase_asr_256.json
-    load_aligned_codes: False
+    name: training  # Name of the training dataset
+    n_workers: ${workers}  # Number of workers for data loading
+    batch_size: ${batch_size}  # Batch size for training
+    mode: paired_voice_audio  # Mode of dataset
+    path: ${dataset_path}  # Path to the training dataset
+    fetcher_mode: ['lj']  # Fetching mode
+    phase: train  # Phase for the dataset
+    max_wav_length: 255995  # Maximum length of audio samples (~11.6 seconds)
+    max_text_length: 200  # Maximum length of text samples
+    sample_rate: 22050  # Sample rate for audio
+    load_conditioning: True  # Whether to load conditioning data
+    num_conditioning_candidates: 2  # Number of conditioning candidates
+    conditioning_length: 44000  # Length for conditioning data
+    use_bpe_tokenizer: True  # Use Byte Pair Encoding tokenizer
+    tokenizer_vocab: ${tokenizer_json}  # Path to tokenizer vocab file
+    load_aligned_codes: False  # Load aligned codes flag
   val:
-    name: validation
-    n_workers: ${workers}
-    batch_size: ${validation_batch_size}
-    mode: paired_voice_audio
-    path: ${validation_path}
-    fetcher_mode: ['lj']
-    phase: val
-    max_wav_length: 255995
-    max_text_length: 200
-    sample_rate: 22050
-    load_conditioning: True
-    num_conditioning_candidates: 2
-    conditioning_length: 44000
-    use_bpe_tokenizer: True
-    tokenizer_vocab: ${tokenizer_json} # ./models/tortoise/bpe_lowercase_asr_256.json
-    load_aligned_codes: False
+    name: validation  # Name of the validation dataset
+    n_workers: ${workers}  # Number of workers for validation data loading
+    batch_size: ${validation_batch_size}  # Batch size for validation
+    mode: paired_voice_audio  # Mode of validation dataset
+    path: ${validation_path}  # Path to the validation dataset
+    fetcher_mode: ['lj']  # Fetching mode
+    phase: val  # Phase for validation dataset
+    max_wav_length: 255995  # Maximum length of audio samples
+    max_text_length: 200  # Maximum length of text samples
+    sample_rate: 22050  # Sample rate for audio
+    load_conditioning: True  # Whether to load conditioning data
+    num_conditioning_candidates: 2  # Number of conditioning candidates
+    conditioning_length: 44000  # Length for conditioning data
+    use_bpe_tokenizer: True  # Use Byte Pair Encoding tokenizer
+    tokenizer_vocab: ${tokenizer_json}  # Path to tokenizer vocab file
+    load_aligned_codes: False  # Load aligned codes flag
 
-steps:        
-  gpt_train:
-    training: gpt
-    loss_log_buffer: 500
+steps:
+  gpt_train:  # Training step configuration
+    training: gpt  # Specify training method
+    loss_log_buffer: 500  # Log losses every 500 steps
 
-    # Generally follows the recipe from the DALLE paper.
-    optimizer: ${optimizer} # this should be adamw_zero if you're using distributed training
+    optimizer: ${optimizer}  # Optimizer to use (e.g., adamw_zero for distributed)
     optimizer_params:
-      lr: !!float ${learning_rate} # originally: 1e-4
-      weight_decay: !!float 1e-2
-      beta1: 0.9
-      beta2: 0.96
-    clip_grad_eps: 4
+      lr: !!float ${learning_rate}  # Learning rate
+      weight_decay: !!float 1e-2  # Weight decay for optimizer
+      beta1: 0.9  # Beta1 parameter for optimizer
+      beta2: 0.96  # Beta2 parameter for optimizer
+    clip_grad_eps: 4  # Gradient clipping epsilon
 
-    injectors:
+    injectors:  # Data processing injectors
       paired_to_mel:
-        type: torch_mel_spectrogram
-        mel_norm_file: ./modules/tortoise-tts/tortoise/data/mel_norms.pth # ./models/tortoise/clips_mel_norms.pth
-        in: wav
-        out: paired_mel
+        type: torch_mel_spectrogram  # Mel spectrogram transformation
+        mel_norm_file: ./modules/tortoise-tts/tortoise/data/mel_norms.pth  # Mel normalization file
+        in: wav  # Input key
+        out: paired_mel  # Output key
       paired_cond_to_mel:
-        type: for_each
-        subtype: torch_mel_spectrogram
-        mel_norm_file: ./modules/tortoise-tts/tortoise/data/mel_norms.pth # ./models/tortoise/clips_mel_norms.pth
-        in: conditioning
-        out: paired_conditioning_mel
+        type: for_each  # For each conditioning data
+        subtype: torch_mel_spectrogram  # Mel spectrogram transformation for conditioning
+        mel_norm_file: ./modules/tortoise-tts/tortoise/data/mel_norms.pth  # Mel normalization file
+        in: conditioning  # Input key
+        out: paired_conditioning_mel  # Output key
       to_codes:
-        type: discrete_token
-        in: paired_mel
-        out: paired_mel_codes
-        dvae_config: "./models/tortoise/train_diffusion_vocoder_22k_level.yml"
+        type: discrete_token  # Tokenization step
+        in: paired_mel  # Input key
+        out: paired_mel_codes  # Output key
+        dvae_config: "./models/tortoise/train_diffusion_vocoder_22k_level.yml"  # Path to DVA configuration
       paired_fwd_text:
-        type: generator
-        generator: gpt
-        in: [paired_conditioning_mel, padded_text, text_lengths, paired_mel_codes, wav_lengths]
-        out: [loss_text_ce, loss_mel_ce, logits]      
-    losses:
+        type: generator  # Generator step
+        generator: gpt  # Specify generator type
+        in: [paired_conditioning_mel, padded_text, text_lengths, paired_mel_codes, wav_lengths]  # Input keys
+        out: [loss_text_ce, loss_mel_ce, logits]  # Output keys
+
+    losses:  # Loss functions configuration
       text_ce:
-        type: direct
-        weight: ${text_lr_weight}
-        key: loss_text_ce
+        type: direct  # Type of loss
+        weight: ${text_lr_weight}  # Weight for text loss
+        key: loss_text_ce  # Key for loss
       mel_ce:
-        type: direct
-        weight: ${mel_lr_weight}
-        key: loss_mel_ce
+        type: direct  # Type of loss
+        weight: ${mel_lr_weight}  # Weight for mel loss
+        key: loss_mel_ce  # Key for loss
 
 networks:
-  gpt:
-    type: generator
-    which_model_G: unified_voice2
-    kwargs:
-      layers: 30 # originally: 8
-      model_dim: 1024 # originally: 512
-      heads: 16 # originally: 8
-      max_text_tokens: 402 # originally: 120
-      max_mel_tokens: 604 # originally: 250
-      max_conditioning_inputs: 2 # originally: 1
-      mel_length_compression: 1024
-      number_text_tokens: 256 # supposed to be 255 for newer unified_voice files 
-      number_mel_codes: 8194
-      start_mel_token: 8192
-      stop_mel_token: 8193
-      start_text_token: 255
-      train_solo_embeddings: False # missing in uv3/4
-      use_mel_codes_as_input: True # ditto
-      checkpointing: True
-      tortoise_compat: True
-      # freeze_everything_but_position_embeddings: True
+  gpt:  # GPT network configuration
+    type: generator  # Type of network
+    which_model_G: unified_voice2  # Model type to use
+    kwargs:  # Model parameters
+      layers: 30  # Number of layers in the model
+      model_dim: 1024  # Dimension of the model
+      heads: 16  # Number of attention heads
+      max_text_tokens: 402  # Maximum number of text tokens
+      max_mel_tokens: 604  # Maximum number of mel tokens
+      max_conditioning_inputs: 2  # Maximum number of conditioning inputs
+      mel_length_compression: 1024  # Mel length compression
+      number_text_tokens: 256  # Number of text tokens
+      number_mel_codes: 8194  # Number of mel codes
+      start_mel_token: 8192  # Start token for mel
+      stop_mel_token: 8193  # Stop token for mel
+      start_text_token: 255  # Start token for text
+      train_solo_embeddings: False  # Flag to train solo embeddings
+      use_mel_codes_as_input: True  # Use mel codes as input
+      checkpointing: True  # Enable checkpointing
+      tortoise_compat: True  # Compatibility with Tortoise framework
+      # freeze_everything_but_position_embeddings: True  # Uncomment to freeze everything but position embeddings
 
 path:
-  strict_load: true
-  ${source_model} 
-  ${resume_state}
+  strict_load: true  # Ensure strict loading of paths
+  ${source_model}  # Source model path
+  ${resume_state}  # Resume state path
 
 train:
-  niter: ${iterations}
-  warmup_iter: -1
-  mega_batch_factor: ${gradient_accumulation_size}
-  val_freq: ${validation_rate}
+  niter: ${iterations}  # Number of training iterations
+  warmup_iter: -1  # Number of warmup iterations
+  mega_batch_factor: ${gradient_accumulation_size}  # Gradient accumulation size
+  val_freq: ${validation_rate}  # Frequency of validation
 
-  ema_enabled: false # I really don't think EMA matters
+  ema_enabled: false  # Enable Exponential Moving Average
 
-  ${learning_rate_scheme}
+  ${learning_rate_scheme}  # Learning rate scheduling
 
 eval:
-  pure: ${validation_enabled}
-  output_state: gen
+  pure: ${validation_enabled}  # Validation enabled flag
+  output_state: gen  # Output state for evaluation
 
-logger: 
-  save_checkpoint_freq: ${save_rate}
-  visuals: [gen, mel]
-  visual_debug_rate: ${save_rate}
-  is_mel_spectrogram: true
+logger:
+  save_checkpoint_freq: ${save_rate}  # Frequency for saving checkpoints
+  visuals: [gen, mel]  # Types of visuals to log
+  visual_debug_rate: ${save_rate}  # Frequency for visual debugging
+  is_mel_spectrogram: true  # Flag indicating if the output is a mel spectrogram
