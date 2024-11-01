@@ -1,6 +1,18 @@
+# .gitmodules
 [submodule "tortoise-tts"]
-	path = modules/tortoise-tts
-	url = https://git.ecker.tech/mrq/tortoise-tts
+    path = modules/tortoise-tts
+    url = https://git.ecker.tech/mrq/tortoise-tts
 [submodule "dlas"]
-	path = modules/dlas
-	url = https://git.ecker.tech/mrq/DL-Art-School
+    path = modules/dlas
+    url = https://git.ecker.tech/mrq/DL-Art-School
+
+# Instructions for Submodule Initialization and Update
+# Make sure to include these commands in your README file for users to follow.
+git submodule init
+git submodule update
+
+# To check the status of submodules:
+git submodule status
+
+# To update all submodules to their latest commits:
+git submodule update --remote
